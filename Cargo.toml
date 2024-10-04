@@ -1,0 +1,17 @@
+[package]
+name = "fourier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cfl = { git = "git+ssh://git@github.com/wyatt-A/cfl.git", branch = "main" }
+array_utils = { git = "git+ssh://git@github.com/wyatt-A/array_utils.git", branch = "main" }
+rustfft = "6.2.0"
+rayon = "1.10.0"
+
+[build-dependencies]
+cc = "1.1.24"
+
+[features]
+default = ["fftw3"]
+fftw3 = []
