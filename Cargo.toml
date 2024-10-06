@@ -13,5 +13,4 @@ rayon = "1.10.0"
 cc = "1.1.24"
 
 [features]
-default = ["fftw3"]
 fftw3 = []
