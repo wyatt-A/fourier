@@ -83,6 +83,7 @@ impl WindowFunction for HanningWindow {
             0.5 * ((2.0 * PI * c.to_f32().unwrap() / *d as f32).cos() + 1.)
         }).product()
     }
+    
 }
 
 pub trait WindowFunction {
