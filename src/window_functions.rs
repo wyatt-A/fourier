@@ -8,7 +8,7 @@
 
 use std::f32::consts::PI;
 
-use cfl::{ndarray::{ArrayD, Dimension}, num_complex::Complex32};
+use cfl::{ndarray::{ArrayD, Dimension, ShapeBuilder}, num_complex::Complex32};
 use rustfft::num_traits::ToPrimitive;
 
 use crate::rustfft::subscript_to_freq_bin;
@@ -88,6 +88,21 @@ impl WindowFunction for HanningWindow {
 pub trait WindowFunction {
     type OutputScalar: ToPrimitive;
     fn evaluate<T:ToPrimitive>(&self,coord:&[T]) -> Self::OutputScalar;
+    fn window(&self,size:&[usize]) -> ArrayD<f32> {
+        let n_dims = size.len();
+        let dims = size.to_owned();
+        let mut freq_bin = vec![0; n_dims];
+        let mut idxs = vec![0usize; n_dims];
+        let mut kern = ArrayD::from_elem(size.f(), 0.);
+        kern.indexed_iter_mut().for_each(|(idx, val)| {
+            idxs.iter_mut()
+                .zip(idx.as_array_view().iter())
+                .for_each(|(a, b)| *a = *b);
+            subscript_to_freq_bin(&dims, &idxs, &mut freq_bin);
+            *val = self.evaluate(&freq_bin).to_f32().expect("failed to convert to float");
+        });
+        kern
+    }
     fn apply(&self,x:&mut ArrayD<Complex32>) {
         let n_dims = x.shape().len();
         let dims = x.shape().to_owned();
